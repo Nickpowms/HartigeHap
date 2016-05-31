@@ -1,102 +1,162 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package presentation;
 
 import buisinesslogic.OrderManager;
+import domain.Consumable;
+import domain.Drink;
+import domain.Meal;
 import domain.OrderList;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.*;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+/**
+ *
+ * @author ppthgast
+ */
+public class OrderFrame extends javax.swing.JFrame {
 
-
-
-public class OrderFrame extends JFrame {
-
-	public static void main(String[] args) {
-            //Aanmaken van frame en paneel
-		JFrame frame = new JFrame();
-		frame.setSize(1000, 500);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle("Bestellingsoverzicht");
-		
-		JPanel paneel = new Paneel();
-	    frame.setContentPane( paneel );
-	    frame.setVisible(true);
-	}
-	
-
-}
-
-class Paneel extends JPanel {
-	private static final long serialVersionUID = 1L;
-        //Declareren van alle componenten die aanwezig zijn
-        //op het paneel.
-        private JPanel menu;
-        private JPanel overview;
-        private OrderList ol;
-        public OrderManager o = new OrderManager();
+    private JTextArea textAreaMemberInfo;
+    private JButton newOrder, confirmOrder;
+    private Consumable drinkC1, mealC1;
+    private JButton drink1, drink2, meal1, meal2, meal3;
+    private OrderList list;
+            
+    private OrderManager manager;
+    
+    public OrderFrame() {
+        initComponents();
+        setupFrame();
         
-        private JButton m1, m2, d1, d2;
-	
-	  public Paneel() {
-              //Grid layout met oneindig aantal rijen en een maximum van 4 kolommen
-              setLayout(new GridLayout( 0, 4, 5, 5));
-              
-                  m1 = new JButton(o.getAllMeals().get(1).getName() + "\n " + o.getAllMeals().get(1).getPrice());
-                  m1.addActionListener(new m1Handler());
-                  
-                  m2 = new JButton(o.getAllMeals().get(2).getName() + "\n " + o.getAllMeals().get(2).getPrice());
-                  m2.addActionListener(new m2Handler());
-                  
-                  d1 = new JButton(o.getAllDrinks().get(1).getName() + "\n " + o.getAllDrinks().get(1).getPrice());
-                  d1.addActionListener(new d1Handler());
-                  
-                  d2 = new JButton(o.getAllDrinks().get(2).getName() + "\n " + o.getAllDrinks().get(2).getPrice());
-                  d2.addActionListener(new d2Handler());
-                  
-                  menu = new JPanel();
-                  menu.add(m1);
-                  menu.add(m2);
-                  menu.add(d1);
-                  menu.add(d2);
-                  //Voeg alle componenten
-                  add(menu);
-                  add(overview);
-	  }
-          
-          class m1Handler implements ActionListener {
-                         public void actionPerformed( ActionEvent e )
-                          {
-                              ol.addConsumable(o.getAllMeals().get(1));
-                          }
-                  }
-          
-          class m2Handler implements ActionListener {
-                         public void actionPerformed( ActionEvent e )
-                          {
-                              ol.addConsumable(o.getAllMeals().get(2));
-                          }
-                  }
-          
-          class d1Handler implements ActionListener {
-                         public void actionPerformed( ActionEvent e )
-                          {
-                              ol.addConsumable(o.getAllDrinks().get(1));
-                          }
-                  }
-          
-          class d2Handler implements ActionListener {
-                         public void actionPerformed( ActionEvent e )
-                          {
-                              ol.addConsumable(o.getAllDrinks().get(2));
-                          }
-                  }
+        manager = new OrderManager();
+    }
+
+    private void setupFrame()
+    {
+        setTitle("Bestellen");
+        
+        list = new OrderList();
+        Consumable drinkC1 = new Drink("Cola", "Test beschrijving", 1.50, 1);
+        Consumable mealC1 = new Meal("Spaghetti", "Bolognese", 1.50, 1);
+        
+        JPanel contentPane = (JPanel)getContentPane();
+        contentPane.setLayout(new BorderLayout(5, 5));
+
+        JPanel searchPanel = createSearchPanel();
+
+        JPanel memberInfoPanel = new JPanel();
+        GridLayout grid = new GridLayout(3, 1, 2, 2);
+        memberInfoPanel.setLayout(grid);
+        
+        textAreaMemberInfo = new JTextArea();
+        memberInfoPanel.add(textAreaMemberInfo);
+        textAreaMemberInfo.setText("");
+        textAreaMemberInfo.setEditable(false);
+        
+        newOrder = new JButton("New Order");
+        newOrder.setSize(new Dimension(73, 23));
+        memberInfoPanel.add(newOrder);
+        newOrder.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                newOrder.setEnabled(false);
+                confirmOrder.setEnabled(true);
+            }
+        });    
+        
+        
+        confirmOrder = new JButton("Confirm");
+        confirmOrder.setSize(new Dimension(73, 23));
+        memberInfoPanel.add(confirmOrder);
+        confirmOrder.setEnabled(false);
+        confirmOrder.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                newOrder.setEnabled(true);
+                confirmOrder.setEnabled(false);
+            }
+        });   
+                
+        contentPane.add(searchPanel, BorderLayout.WEST);
+        contentPane.add(memberInfoPanel, BorderLayout.CENTER);
+     
+        pack();
+        setSize(800, 300);
+    }
+    
+    private JPanel createSearchPanel()
+    {
+        // Make a panel with controls to be able to search a member based on
+        // its membership number.
+        JPanel searchPanel = new JPanel();
+        GridLayout grid = new GridLayout(2, 0, 2, 2);
+        searchPanel.setLayout(grid);
+        
+        drink1 = new JButton("Drink 1, €1,50");
+        drink1.setSize(new Dimension(73, 23));
+        searchPanel.add(drink1);
+        drink1.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                textAreaMemberInfo.setText(textAreaMemberInfo.getText() + "\n"
+                        + "text");
+            }
+        });    
+        
+        drink2 = new JButton("Drink 2, €1,60");
+        drink2.setSize(new Dimension(73, 23));
+        searchPanel.add(drink2);
+        
+        meal1 = new JButton("Meal 1, €1,50");
+        meal1.setSize(new Dimension(73, 23));
+        searchPanel.add(meal1);
+        
+        meal2 = new JButton("Meal 2, €1,50");
+        meal2.setSize(new Dimension(73, 23));
+        searchPanel.add(meal2);
+        
+        meal3 = new JButton("Meal 3, €1,50");
+        meal3.setSize(new Dimension(73, 23));
+        searchPanel.add(meal3);
+        
+        return searchPanel;
+    }
+            
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>                        
+
+    // Variables declaration - do not modify                     
+    // End of variables declaration                   
 }
-
-
